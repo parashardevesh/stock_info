@@ -49,15 +49,38 @@ def login():
             flash('Login Unsuccessful. Please check in username and password.', 'danger')
     return render_template('login.html', title = 'login', form=form)
 
-@app.route('/test/login', methods = ["POST"])
+@app.route('/test/register', methods = ["POST"])
 def test_dummy_login():
-    username = request.json['username']
-    password = request.json['password']
+    try:
+        # get payload values sent from FE
+        email = request.json['email']
+        username = request.json['username']
+        password = request.json['password']
+        confirm_password = request.json['confirm_password'] 
+        
+        # verify if username is taken or not
+        does_username_exist = User.query.filter_by(username=username).first()
+        if does_username_exist:
+            return { 'Error': 'Username already exists' }
+        
+        # verify if email is taken or not
+        does_email_exist = User.query.filter_by(email=email).first()
+        if does_email_exist:
+            return { 'Error': 'Email already exists' }
+
+        # verify if pass eq to confirm pass
+        if password != confirm_password:
+            return { 'Error': 'Passwords donot match' }
     
-    if username == 'devesh' and password == 'devesh':
-        return { 'username': username, 'password':password }
-    else:
-        return { 'error': 'user not found' }
+        # hash pass before saving to db
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        user = User(username=username, email=email, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        return { 'Success': 'Your account has been created!' }
+    except Exception as e:
+        print(e)
+        return { 'Error': 'Something went wrong!' }
 
 @app.route('/<stock_name>')
 def get_stock_info(stock_name):
