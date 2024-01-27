@@ -5,6 +5,8 @@ certifi==2023.11.17
 charset-normalizer==3.3.2
 click==8.1.7
 Flask==3.0.1
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.1
 frozendict==2.4.0
 html5lib==1.1
 idna==3.6
@@ -21,8 +23,11 @@ pytz==2023.3.post1
 requests==2.31.0
 six==1.16.0
 soupsieve==2.5
+SQLAlchemy==2.0.25
+typing_extensions==4.9.0
 tzdata==2023.4
 urllib3==2.1.0
 webencodings==0.5.1
 Werkzeug==3.0.1
+WTForms==3.1.2
 yfinance==0.2.36
