@@ -2,6 +2,7 @@ from flask import render_template, request, flash, url_for, redirect, flash
 from stock import app, db, bcrypt
 from stock.forms import RegistrationForm, LoginForm
 from stock.models import User, Portfolio
+from flask_login import login_user, current_user, logout_user
 import email_validator
 import yfinance as yf
 import json
@@ -28,6 +29,8 @@ def home():
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -40,14 +43,26 @@ def register():
 
 @app.route('/login', methods = ['GET', 'POST'] )
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        if form.email.data == 'dev@demo.com' and form.password.data == 'password':
-            flash('You have been logged in!', 'success')
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password):
+            login_user(user, remember=form.remember.data)
+            flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
-            flash('Login Unsuccessful. Please check in username and password.', 'danger')
-    return render_template('login.html', title = 'login', form=form)
+            flash('Login Unsuccessful. Please check email and password.', 'danger')
+    return render_template('login.html', title = 'Login', form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+
+
 
 @app.route('/test/register', methods = ["POST"])
 def test_dummy_login():
