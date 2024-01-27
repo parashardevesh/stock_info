@@ -48,7 +48,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password):
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
@@ -60,9 +60,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
-
-
 
 @app.route('/test/register', methods = ["POST"])
 def test_dummy_login():
