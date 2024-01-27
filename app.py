@@ -19,7 +19,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(50), nullable = False)
-    transactions = db.relationship('Transaction', backref='portfolio', lazy=True)
+    transactions = db.relationship('Transaction', backref='portfolio', lazy=True) #Transaction is in uppercase because i am referring to actual Transaction class
     
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
@@ -30,7 +30,7 @@ class Transaction(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
     date = db.Column(db.Date, nullable=False, server_default=db.func.current.data())
-    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) #user is in lowercase in ForeignKey because now I am referring to table and column name
 
     def __repr__(self):
         return f"Transaction('{self.stock_symbol}','{self.quantity}','{self.price}','{self.date}')"
