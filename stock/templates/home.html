@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for stock in stocks %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ stock.Name }}</a>
+              <small class="text-muted">{{ stock.Analysts }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ stock.Hold }}</a></h2>
+            <p class="article-content">{{ stock.Target }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}
