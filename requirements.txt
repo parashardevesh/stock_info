@@ -23,6 +23,7 @@ multitasking==0.0.11
 numpy==1.26.3
 pandas==2.2.0
 peewee==3.17.0
+pillow==10.2.0
 python-dateutil==2.8.2
 pytz==2023.3.post1
 requests==2.31.0
