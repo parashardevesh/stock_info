@@ -1,8 +1,8 @@
-from flask import render_template, request, flash, url_for, redirect, flash
+from flask import render_template, flash, url_for, redirect, request
 from stock import app, db, bcrypt
 from stock.forms import RegistrationForm, LoginForm
 from stock.models import User, Portfolio
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 import email_validator
 import yfinance as yf
 import json
@@ -51,7 +51,8 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             flash('Login successful!', 'success')
-            return redirect(url_for('home'))
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash('Login Unsuccessful. Please check email and password.', 'danger')
     return render_template('login.html', title = 'Login', form=form)
@@ -60,6 +61,12 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+@app.route('/account')
+@login_required
+def account():
+    image_file = url_for('static', filename = 'profile_pics/' + current_user.image_file)
+    return render_template('account.html', title='Account', image_file=image_file)
 
 @app.route('/test/register', methods = ["POST"])
 def test_dummy_login():
@@ -95,6 +102,7 @@ def test_dummy_login():
         return { 'Error': 'Something went wrong!' }
 
 @app.route('/<stock_name>')
+@login_required
 def get_stock_info(stock_name):
     ticker = yf.Ticker(stock_name)
 
