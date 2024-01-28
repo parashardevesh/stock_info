@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DecimalField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, InputRequired
 from stock.models import User
 
 class RegistrationForm(FlaskForm):
@@ -55,3 +55,11 @@ class UpdateAccountForm(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user:
                 raise ValidationError('That email is already taken. Please choose a different one.')
+            
+ 
+class PortfolioForm(FlaskForm):
+    stock_symbol = StringField('Stock', validators=[DataRequired(), Length(min=2, max=20)])
+    quantity = IntegerField('Quantity', validators=[DataRequired(), InputRequired()])
+    price = DecimalField('Price Limit',validators=[DataRequired(), InputRequired()])
+    submit = SubmitField('Add')
+            

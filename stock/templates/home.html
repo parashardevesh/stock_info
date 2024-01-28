@@ -4,11 +4,11 @@
         <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{ stock.Name }}</a>
-              <small class="text-muted">{{ stock.Analysts }}</small>
+              <a class="mr-2" href="#">{{ stock.stock_symbol }}</a>
+              <small class="text-muted">{{ stock.quantity }}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ stock.Hold }}</a></h2>
-            <p class="article-content">{{ stock.Target }}</p>
+            <h2><a class="article-title" href="#">{{ stock.price }}</a></h2>
+            <p class="article-content">{{ stock.date }}</p>
           </div>
         </article>
     {% endfor %}

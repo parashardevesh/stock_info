@@ -1,6 +1,6 @@
 from flask import render_template, flash, url_for, redirect, request
 from stock import app, db, bcrypt
-from stock.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from stock.forms import RegistrationForm, LoginForm, UpdateAccountForm, PortfolioForm
 from stock.models import User, Portfolio
 from flask_login import login_user, current_user, logout_user, login_required
 from PIL import Image
@@ -9,25 +9,11 @@ import os
 import email_validator
 import yfinance as yf
 import json
-  
-stocks = [
-    {
-        'Name':'IRFC',
-        'Analysts':'Good Buy',
-        'Hold':'One Year',
-        'Target':'250'
-    },
-    {
-        'Name':'IREDA',
-        'Analysts':'Strong Buy',
-        'Hold':'2 years',
-        'Target':'350'
-    }
-]
 
 @app.route('/')
 @app.route('/home')
 def home():
+    stocks = Portfolio.query.all()
     return render_template('home.html', stocks=stocks)
 
 @app.route('/register', methods = ['GET', 'POST'])
@@ -95,6 +81,21 @@ def account():
         form.email.data=current_user.email
     image_file = url_for('static', filename = 'profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form)
+
+@app.route('/portfolio/new', methods = ['GET', 'POST'])
+@login_required
+def portfolio():
+    form = PortfolioForm()
+    if form.validate_on_submit():
+        stock = Portfolio(stock_symbol=form.stock_symbol.data, 
+                          quantity=form.quantity.data, price=form.price.data, 
+                          stockholder=current_user)
+        db.session.add(stock)
+        db.session.commit()
+        flash('Your stock has been added to Portfolio!', 'success')
+        return redirect(url_for('home'))
+    return render_template('portfolio.html', title='Portfolio', form=form)
+
 
 @app.route('/test/register', methods = ["POST"])
 def test_dummy_login():
