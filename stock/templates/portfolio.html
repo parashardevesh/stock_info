@@ -5,7 +5,7 @@
       <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + portfolio.stockholder.image_file) }}">
       <div class="media-body">
         <div class="article-metadata">
-          <a class="mr-2" href="#">{{ portfolio.stockholder.username }}</a>
+          <a class="mr-2" href="{{ url_for('user_portfolios', username=portfolio.stockholder.username) }}">{{ portfolio.stockholder.username }}</a>
           <small class="text-muted">{{ portfolio.date.strftime('%Y-%m-%d') }}</small>
             <div>
               <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_portfolio', portfolio_id=portfolio.id) }}">Update</a>

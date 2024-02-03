@@ -13,7 +13,8 @@ import json
 @app.route('/')
 @app.route('/home')
 def home():
-    portfolios = Portfolio.query.all()
+    page = request.args.get('page', 1, type=int)
+    portfolios = Portfolio.query.order_by(Portfolio.date.desc()).paginate(page=page, per_page = 4)
     return render_template('home.html', portfolios=portfolios)
 
 @app.route('/register', methods = ['GET', 'POST'])
@@ -132,6 +133,15 @@ def delete_portfolio(portfolio_id):
     db.session.commit()
     flash('Your portfolio has been deleted!', 'success')
     return redirect(url_for('home'))
+
+@app.route("/user/<string:username>")
+def user_portfolios(username):
+    page = request.args.get('page', 1, type=int)
+    user = User.query.filter_by(username=username).first_or_404()
+    portfolios = Portfolio.query.filter_by(stockholder=user)\
+                .order_by(Portfolio.date.desc())\
+                .paginate(page=page, per_page = 4)
+    return render_template('user_portfolios.html', portfolios=portfolios, user=user)
 
 
 @app.route('/test/register', methods = ["POST"])
