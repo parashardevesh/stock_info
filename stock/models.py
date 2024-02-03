@@ -15,7 +15,7 @@ class User(db.Model, UserMixin):
     portfolios = db.relationship('Portfolio', backref='stockholder', lazy=True) #Portfolio is in uppercase because i am referring to actual Portfolio class
     
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}', '{self.image_file}')"
+        return f"User('{self.id}', '{self.username}', '{self.email}', '{self.image_file}')"
 
 class Portfolio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,5 +26,5 @@ class Portfolio(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) #user is in lowercase in ForeignKey because now I am referring to table and column name
 
     def __repr__(self):
-        return f"Portfolio('{self.stock_symbol}','{self.quantity}','{self.price}','{self.date}')"
+        return f"Portfolio('{self.id}', '{self.stock_symbol}','{self.quantity}','{self.price}','{self.date}')"
     

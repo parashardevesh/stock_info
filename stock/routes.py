@@ -1,4 +1,4 @@
-from flask import render_template, flash, url_for, redirect, request
+from flask import render_template, flash, url_for, redirect, request, abort
 from stock import app, db, bcrypt
 from stock.forms import RegistrationForm, LoginForm, UpdateAccountForm, PortfolioForm
 from stock.models import User, Portfolio
@@ -13,8 +13,8 @@ import json
 @app.route('/')
 @app.route('/home')
 def home():
-    stocks = Portfolio.query.all()
-    return render_template('home.html', stocks=stocks)
+    portfolios = Portfolio.query.all()
+    return render_template('home.html', portfolios=portfolios)
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
@@ -84,17 +84,54 @@ def account():
 
 @app.route('/portfolio/new', methods = ['GET', 'POST'])
 @login_required
-def portfolio():
+def new_portfolio():
     form = PortfolioForm()
     if form.validate_on_submit():
-        stock = Portfolio(stock_symbol=form.stock_symbol.data, 
+        portfolio = Portfolio(stock_symbol=form.stock_symbol.data, 
                           quantity=form.quantity.data, price=form.price.data, 
                           stockholder=current_user)
-        db.session.add(stock)
+        db.session.add(portfolio)
         db.session.commit()
         flash('Your stock has been added to Portfolio!', 'success')
         return redirect(url_for('home'))
-    return render_template('portfolio.html', title='Portfolio', form=form)
+    return render_template('portfolio_new.html', title='Portfolio', form=form)
+
+@app.route('/portfolio/<int:portfolio_id>')
+def portfolio(portfolio_id):
+    portfolio = Portfolio.query.get_or_404(portfolio_id)
+    return render_template('portfolio.html', title=portfolio.stock_symbol, portfolio=portfolio)
+
+@app.route("/portfolio/<int:portfolio_id>/update", methods=['GET', 'POST'])
+@login_required
+def update_portfolio(portfolio_id):
+    portfolio = Portfolio.query.get_or_404(portfolio_id)
+    if portfolio.stockholder != current_user:
+        abort(403)
+    form = PortfolioForm()
+    if form.validate_on_submit():
+        portfolio.stock_symbol = form.stock_symbol.data
+        portfolio.quantity = form.quantity.data
+        portfolio.price = form.price.data
+        db.session.commit()
+        flash('Your portfolio has been updated!', 'success')
+        return redirect(url_for('portfolio', portfolio_id=portfolio.id))
+    elif request.method == 'GET':
+        form.stock_symbol.data = portfolio.stock_symbol
+        form.quantity.data = portfolio.quantity
+        form.price.data = portfolio.price
+    return render_template('portfolio_new.html', title='Update Portfolio',
+                           form=form, legend='Update Portfolio')
+
+@app.route("/portfolio/<int:portfolio_id>/delete", methods=['POST'])
+@login_required
+def delete_portfolio(portfolio_id):
+    portfolio = Portfolio.query.get_or_404(portfolio_id)
+    if portfolio.stockholder != current_user:
+        abort(403)
+    db.session.delete(portfolio)
+    db.session.commit()
+    flash('Your portfolio has been deleted!', 'success')
+    return redirect(url_for('home'))
 
 
 @app.route('/test/register', methods = ["POST"])

@@ -1,53 +1,39 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="content-section">
-    <form method="POST" action="">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Portfolio</legend>
-            <div class="form-group">
-                {{ form.stock_symbol.label(class="form-control-label") }}
-                {% if form.stock_symbol.errors %}
-                    {{ form.stock_symbol(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.stock_symbol.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.stock_symbol(class="form-control form-control-lg") }}
-                {% endif %}
+{% if portfolio.stockholder == current_user %}
+    <article class="media content-section">
+      <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + portfolio.stockholder.image_file) }}">
+      <div class="media-body">
+        <div class="article-metadata">
+          <a class="mr-2" href="#">{{ portfolio.stockholder.username }}</a>
+          <small class="text-muted">{{ portfolio.date.strftime('%Y-%m-%d') }}</small>
+            <div>
+              <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_portfolio', portfolio_id=portfolio.id) }}">Update</a>
+              <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
             </div>
-            <div class="form-group">
-                {{ form.quantity.label(class="form-control-label") }}
-                {% if form.quantity.errors %}
-                    {{ form.quantity(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.quantity.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.quantity(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.price.label(class="form-control-label") }}
-                {% if form.price.errors %}
-                    {{ form.price(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.price.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.price(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
-        </fieldset>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
+          </div>
+          <h2 class="article-title">{{ portfolio.stock_symbol }}</h2>
+          <p class="article-content">{{ portfolio.price }}</p>
         </div>
-    </form>
-</div>
+      </article>
+    {% endif %}
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Portfolio?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form action="{{ url_for('delete_portfolio', portfolio_id=portfolio.id) }}" method="POST">
+            <input class="btn btn-danger" type="submit" value="Delete">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
