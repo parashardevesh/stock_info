@@ -6,10 +6,10 @@
           <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + portfolio.stockholder.image_file) }}">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="{{ url_for('user_portfolios', username=portfolio.stockholder.username) }}">{{ portfolio.stock_symbol.username }}</a>
+              <a class="mr-2" href="{{ url_for('users.user_portfolios', username=portfolio.stockholder.username) }}">{{ portfolio.stock_symbol.username }}</a>
               <small class="text-muted">{{ portfolio.date.strftime('%Y-%m-%d') }}</small>
             </div>
-            <h2><a class="article-title" href="{{ url_for('portfolio', portfolio_id=portfolio.id) }}">{{ portfolio.stock_symbol }}</a></h2>
+            <h2><a class="article-title" href="{{ url_for('portfolios.portfolio', portfolio_id=portfolio.id) }}">{{ portfolio.stock_symbol }}</a></h2>
             <p class="article-content">{{ portfolio.quantity }}</p>
             <p class="article-content">{{ portfolio.price }}</p>
           </div>
@@ -18,9 +18,9 @@
     {% for page_num in portfolios.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
         {% if page_num %}
           {% if portfolios.page == page_num %}
-            <a class= "btn btn-info mb-4" href="{{ url_for('user_portfolios', username=user.username, page=page_num) }}">{{ page_num }}</a>
+            <a class= "btn btn-info mb-4" href="{{ url_for('users.user_portfolios', username=user.username, page=page_num) }}">{{ page_num }}</a>
           {% else %}
-            <a class= "btn btn-outline-info mb-4" href="{{ url_for('user_portfolios', username=user.username, page=page_num) }}">{{ page_num }}</a>
+            <a class= "btn btn-outline-info mb-4" href="{{ url_for('users.user_portfolios', username=user.username, page=page_num) }}">{{ page_num }}</a>
           {% endif %}
         {% else %}
           ...
