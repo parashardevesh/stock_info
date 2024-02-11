@@ -2,10 +2,9 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from stock import db, bcrypt
 from flask_login import login_user, current_user, logout_user, login_required
 from stock.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm, 
-                        RequestResetForm, ResetPasswordForm)
+                               RequestResetForm, ResetPasswordForm)
 from stock.users.utils import save_picture, send_reset_email
 from stock.models import User, Portfolio
-
 
 users = Blueprint('users', __name__)
 
@@ -63,7 +62,6 @@ def account():
     image_file = url_for('static', filename = 'profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form)
 
-
 @users.route("/user/<string:username>")
 def user_portfolios(username):
     page = request.args.get('page', 1, type=int)
@@ -72,8 +70,6 @@ def user_portfolios(username):
                 .order_by(Portfolio.date.desc())\
                 .paginate(page=page, per_page = 4)
     return render_template('user_portfolios.html', portfolios=portfolios, user=user)
-
-
 
 @users.route("/reset_password", methods = ['GET', 'POST'])
 def reset_request():
@@ -103,5 +99,3 @@ def reset_token(token):
         flash(f'Your password has been updated! You can now log in.', 'success')
         return redirect(url_for('users.login'))
     return render_template('reset_token.html', title='Reset Password', form=form)
-
-  
